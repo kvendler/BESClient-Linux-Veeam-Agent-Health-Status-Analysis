@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BES xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="BES.xsd">
+	<Analysis>
+		<Title>Veeam Agent for Linux Health Status</Title>
+		<Description><![CDATA[<P>The FREE standalone <STRONG>Veeam® Agent for&nbsp;Linux</STRONG> provides a simple solution for backing up Linux-based&nbsp;computers. With <STRONG>Veeam® Agent for&nbsp;Linux FREE</STRONG>, you can easily back up your computer to an external hard drive, network-attached storage (NAS) share or a Veeam Backup &amp; Replication™ repository.</P>
+<P>This Analysis provides the Installation Status, Veeam Agent Version, and Veeam Agent Service Status for endpoints. It also&nbsp;provides the size of the veeamsvc.log and&nbsp;the date/time of the <STRONG>Last Successful</STRONG> and Last <STRONG>Failed backups</STRONG>.</P>
+<P>The current version of this Analysis supports the following distributions of Linux:</P>
+<UL>
+<LI>Red Hat Enterprise Linux</LI>
+<LI>Oracle Enterprse Linux</LI>
+<LI>SuSE Enterprise Linux</LI>
+<LI>openSuSE Linux</LI>
+<LI>Ubuntu Linux</LI></UL>
+<P>Version 1.0</P>]]></Description>
+		<GroupRelevance JoinByIntersection="false">
+			<SearchComponentPropertyReference PropertyName="OS" Comparison="Contains">
+				<SearchText>Linux</SearchText>
+				<Relevance>exists (operating system) whose (it as string as lowercase contains "Linux" as lowercase)</Relevance>
+			</SearchComponentPropertyReference>
+		</GroupRelevance>
+		<Source>Internal</Source>
+		<SourceReleaseDate>2024-01-01</SourceReleaseDate>
+		<MIMEField>
+			<Name>x-fixlet-modification-time</Name>
+			<Value>Tue, 09 Jan 2024 03:40:51 +0000</Value>
+		</MIMEField>
+		<Domain>BESC</Domain>
+		<Property Name="Installation Status" ID="1">if (exists file "/usr/bin/veeam") then ("Installed") else("Not Installed")</Property>
+		<Property Name="Veeam Agent Version" ID="4"><![CDATA[if (exists file "/usr/bin/veeam") AND (name of operating system contains "Red Hat") then("Veeam Agent for Linux" & " " & version of package "veeam" of rpm as string) else if (exists file "/usr/bin/veeam") AND (name of operating system contains "SUSE") then ("Veeam Agent for Linux" & " " & version of package "veeam" of rpm as string) else if (exists file "/usr/bin/veeam") AND (name of operating system contains "Ubuntu") then ("Veeam Agent for Linux" & " " & installed version of base package "veeam" of debianpackage as string) else if (exists file "/usr/bin/veeam") AND (name of operating system contains "Linux Oracle") then("Veeam Agent for Linux" & " " & version of package "veeam" of rpm as string) else ("Not installed")]]></Property>
+		<Property Name="Veeam Service Status" ID="5">if (exists process "veeamworker") then("Running") else ("Service not running")</Property>
+		<Property Name="Veeamsvc.log Size" ID="9"><![CDATA[if (exists file "/var/log/veeam/veeamsvc.log") then (size of file "/var/log/veeam/veeamsvc.log" as string & " bytes") else("Log not found")]]></Property>
+		<Property Name="Last Successful Backup" ID="11"><![CDATA[if (exists file "/var/log/veeam/veeamsvc.log" AND exists lines containing "Job attempt was successful" of file "/var/log/veeam/veeamsvc.log") then(month (first 2 of following text of position 3 of (preceding texts of firsts "]" of following texts of firsts "[" of (following text of last "-CONCAT-" of it | it) of concatenations "-CONCAT-" of lines containing "Job attempt was successful" of files "/var/log/veeam/veeamsvc.log") as integer) as string & " " & day_of_month (first 2 of following text of position 0 of (preceding texts of firsts "]" of following texts of firsts "[" of (following text of last "-CONCAT-" of it | it) of concatenations "-CONCAT-" of lines containing "Job attempt was successful" of files "/var/log/veeam/veeamsvc.log") as integer) as string & ", " &year (first 4 of following text of position 6 of (preceding texts of firsts "]" of following texts of firsts "[" of (following text of last "-CONCAT-" of it | it) of concatenations "-CONCAT-" of lines containing "Job attempt was successful" of files "/var/log/veeam/veeamsvc.log") as integer) as string & " at: " & (first 5 of following text of position 11 of preceding texts of firsts "]" of following texts of firsts "[" of (following text of last "-CONCAT-" of it | it) of concatenations "-CONCAT-" of lines containing "Job attempt was successful" of files "/var/log/veeam/veeamsvc.log")) else("No successful backup found")]]></Property>
+		<Property Name="Last Failed Backup" ID="12"><![CDATA[if (exists file "/var/log/veeam/veeamsvc.log" AND exists lines containing "WARN|Job has failed" of file "/var/log/veeam/veeamsvc.log") then(month (first 2 of following text of position 3 of (preceding texts of firsts "]" of following texts of firsts "[" of (following text of last "-CONCAT-" of it | it) of concatenations "-CONCAT-" of lines containing "WARN|Job has failed" of files "/var/log/veeam/veeamsvc.log") as integer) as string & " " & day_of_month (first 2 of following text of position 0 of (preceding texts of firsts "]" of following texts of firsts "[" of (following text of last "-CONCAT-" of it | it) of concatenations "-CONCAT-" of lines containing "WARN|Job has failed" of files "/var/log/veeam/veeamsvc.log") as integer) as string & ", " &year (first 4 of following text of position 6 of (preceding texts of firsts "]" of following texts of firsts "[" of (following text of last "-CONCAT-" of it | it) of concatenations "-CONCAT-" of lines containing "WARN|Job has failed" of files "/var/log/veeam/veeamsvc.log") as integer) as string & " at: " & (first 5 of following text of position 11 of preceding texts of firsts "]" of following texts of firsts "[" of (following text of last "-CONCAT-" of it | it) of concatenations "-CONCAT-" of lines containing "WARN|Job has failed" of files "/var/log/veeam/veeamsvc.log")) else("No failed backups found.")]]></Property>
+	</Analysis>
+</BES>
